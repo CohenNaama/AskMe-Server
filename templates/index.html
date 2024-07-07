@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask a Question</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+        .container {
+            width: 50%;
+        }
+        .result-box {
+            margin-top: 20px;
+            display: none;
+        }
+        .thank-you {
+            color: #00796b;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            display: none;
+        }
+        .reset-button {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h4>Ask a Question</h4>
+        <div class="input-field">
+            <input type="text" id="question" required>
+            <label for="question">Enter your question</label>
+        </div>
+        <button class="btn waves-effect waves-light" id="submit">Submit</button>
+        <div id="answer" class="card-panel teal lighten-2 white-text result-box">
+            <span id="answer-text"></span>
+        </div>
+        <div id="thank-you" class="thank-you">
+            Thank you for asking! We hope you found the answer helpful.<br>Have a great day! 😊
+        </div>
+        <button class="btn waves-effect waves-light reset-button" id="reset">Reset</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.getElementById('submit').addEventListener('click', function() {
+            const question = document.getElementById('question').value;
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.answer) {
+                    document.getElementById('answer-text').innerText = data.answer;
+                    document.getElementById('answer').style.display = 'block';
+                    document.getElementById('thank-you').style.display = 'block';
+                    document.getElementById('reset').style.display = 'block';
+                } else {
+                    M.toast({html: 'Error: ' + data.error, classes: 'red'});
+                }
+            })
+            .catch(error => {
+                M.toast({html: 'Error: ' + error.message, classes: 'red'});
+            });
+        });
+
+        document.getElementById('reset').addEventListener('click', function() {
+            document.getElementById('question').value = '';
+            document.getElementById('answer').style.display = 'none';
+            document.getElementById('thank-you').style.display = 'none';
+            document.getElementById('reset').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
