@@ -16,6 +16,8 @@ def ask_question():
     try:
         data = request.json
         inquiry = create_inquiry(data['question'])
+    except ValueError as ve:
+        return jsonify({'message': 'Error: Invalid JSON data', 'details': str(ve)}), 400
     except Exception as e:
         return jsonify({'message': 'Error processing request', 'error': str(e)}), 500
 
