@@ -11,7 +11,16 @@ migrate = Migrate()
 
 
 def create_app(config_class=Config):
-    app = Flask(__name__, template_folder="../templates")
+    """
+      Create and configure the Flask application.
+
+      Args:
+          config_class (class): The configuration class to use for the app.
+
+      Returns:
+          Flask: The configured Flask application instance.
+      """
+    app = Flask(__name__, template_folder="../templates", static_folder='../static')
     app.config.from_object(config_class)
 
     db.init_app(app)

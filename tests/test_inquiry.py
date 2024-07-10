@@ -6,6 +6,12 @@ from app import create_app, db
 
 @pytest.fixture
 def app():
+    """
+       Fixture to set up the Flask application for testing.
+
+       Yields:
+           Flask: The Flask application instance.
+       """
     os.environ['DATABASE_URL'] = 'sqlite:///:memory:'
     os.environ['OPENAI_API_KEY'] = 'sk-test-API-key'
 
@@ -21,10 +27,25 @@ def app():
 
 @pytest.fixture
 def client(app):
+    """
+      Fixture to set up the Flask test client.
+
+      Args:
+          app (Flask): The Flask application instance.
+
+      Returns:
+          FlaskClient: The Flask test client.
+      """
     return app.test_client()
 
 
 def test_ask_endpoint(client):
+    """
+       Test the /ask endpoint with a valid question.
+
+       Args:
+           client (FlaskClient): The Flask test client.
+       """
     mock_response = {
         'choices': [{'message': {'content': 'This is a mocked response.'}}]
     }
@@ -41,6 +62,12 @@ def test_ask_endpoint(client):
 
 
 def test_ask_endpoint_invalid_json(client):
+    """
+      Test the /ask endpoint with invalid JSON data.
+
+      Args:
+          client (FlaskClient): The Flask test client.
+      """
     response = client.post('/ask', json={'wrong_key': 'What is the capital of Israel?'})
     assert response.status_code == 400
     response_data = response.get_json()
@@ -51,6 +78,12 @@ def test_ask_endpoint_invalid_json(client):
 
 
 def test_ask_endpoint_empty_question(client):
+    """
+       Test the /ask endpoint with an empty question.
+
+       Args:
+           client (FlaskClient): The Flask test client.
+       """
     response = client.post('/ask', json={'question': ''})
     assert response.status_code == 400
     response_data = response.get_json()

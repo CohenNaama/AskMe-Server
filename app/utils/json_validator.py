@@ -4,6 +4,18 @@ from jsonschema import validate
 
 
 def json_validator(schema):
+    """
+      Decorator to validate JSON request data against a given schema.
+
+      Args:
+          schema (dict): The JSON schema to validate against.
+
+      Returns:
+          function: The decorated function with JSON validation.
+
+      Raises:
+          Exception: If the JSON data does not conform to the schema.
+      """
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):

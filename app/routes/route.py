@@ -13,6 +13,14 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 @main.route('/ask', methods=['POST'])
 @json_validator(inquiry_schema)
 def ask_question():
+    """
+        Handle the endpoint for asking a question.
+
+        Validates the request JSON against the inquiry schema and processes the inquiry.
+
+        Returns:
+            Response: JSON response containing the inquiry details or an error message.
+        """
     try:
         data = request.json
         inquiry = create_inquiry(data['question'])
@@ -32,4 +40,10 @@ def ask_question():
 
 @main.route('/')
 def home():
+    """
+        Render the home page.
+
+        Returns:
+            Response: Rendered HTML template for the home page.
+        """
     return render_template('index.html')

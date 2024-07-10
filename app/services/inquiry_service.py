@@ -7,6 +7,19 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
 def create_inquiry(question, openai_client=openai):
+    """
+       Create a new inquiry and get the answer from OpenAI.
+
+       Args:
+           question (str): The question to be asked.
+           openai_client (module): The OpenAI client module. Defaults to openai.
+
+       Returns:
+           Inquiry: The created inquiry instance.
+
+       Raises:
+           ValueError: If the question is empty.
+       """
     if not question.strip():
         raise ValueError("Question cannot be empty.")
     api_key = os.getenv('OPENAI_API_KEY')
