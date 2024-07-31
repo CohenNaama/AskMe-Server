@@ -116,8 +116,8 @@ This command will execute all tests in your tests directory.
 FROM python:3.11-slim
 
 # Set environment variables to prevent Python from writing pyc files to disc and to buffer stdout and stderr
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Set work directory
 WORKDIR /app
@@ -126,10 +126,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy wait-for-it script
-COPY wait-for-it.sh /wait-for-it.sh
-RUN chmod +x /wait-for-it.sh
-
 # Copy project
 COPY . .
 
@@ -137,7 +133,8 @@ COPY . .
 EXPOSE 5000
 
 # Run the Flask application
-CMD ["/wait-for-it.sh", "db:5432", "--", "flask", "run", "--host=0.0.0.0"] 
+CMD ["flask", "run", "--host=0.0.0.0"]
+
 ~~~~
 
 * PostgreSQL Dockerfile:
@@ -153,17 +150,21 @@ ENV POSTGRES_DB=askdb
 
 # Copy initialization script
 COPY init.sql /docker-entrypoint-initdb.d/
+
+# Healthcheck to ensure the database is ready
+HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
+  CMD pg_isready -U $POSTGRES_USER || exit 1
 ~~~~
 
 ## Docker Compose File ##
 * docker-compose.yml:
 
 ~~~~
-version: '3.8'
+version: '3.9'
 
 services:
   db:
-    image: postgres:16
+    build: ./postgres
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: askdb
@@ -171,8 +172,13 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  web:
+  website:
     build: .
     command: flask run --host=0.0.0.0
     environment:
@@ -183,7 +189,8 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   pgadmin:
     image: dpage/pgadmin4
@@ -193,19 +200,33 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
+
 ~~~~
 
 # API Endpoints #
 ### /ask ###
 ### POST /ask ###
 Description: Ask a question and get an answer from the OpenAI API.
-Request Body: { "question": "What is the capital of Israel?"}
-Response Body: { "id": 1, "question": "What is the capital of Israel?", "answer": "The capital of Israel is Jerusalem.", "created_at": "2024-07-08T10:00:00Z"}
-
+Request Body:
+~~~~
+{
+ "question": "What is the capital of Israel?"
+ }
+~~~~
+Response Body:
+~~~~
+{
+  "id": 1, 
+  "question": "What is the capital of Israel?", 
+  "answer": "The capital of Israel is Jerusalem.", 
+  "created_at": "2024-07-08T10:00:00Z"
+  }
+~~~~
 
 # License
 This project is licensed under the MIT License. See the LICENSE file for details.
