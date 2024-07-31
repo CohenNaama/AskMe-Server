@@ -58,7 +58,7 @@ jobs:
 
       - name: Docker Compose up
         run: docker-compose up -d
-          
+
       - name: Run migrations
         run: docker-compose exec web flask db upgrade
 
