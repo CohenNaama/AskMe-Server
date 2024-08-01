@@ -9,6 +9,7 @@ AskMeAPP is a Flask-based web application that allows users to ask questions and
 - [Running the Application](#running-the-application)
 - [Testing](#testing)
 - [Configuration](#configuration)
+- [Continuous Integration and Deployment](#Continuous Integration and Deployment)
 - [API Endpoints](#api-endpoints)
 - [License](#License)
 
@@ -22,6 +23,7 @@ AskMeAPP is a Flask-based web application that allows users to ask questions and
 - Fully dockerized setup with Docker Compose.
 - Web interface for a pleasant user experience.
 - Database migrations with Alembic.
+- Automated CI/CD pipeline with GitHub Actions.
 
 ## Installation
 
@@ -91,7 +93,7 @@ This command will start three containers:
   * Add a new server connection in pgAdmin to access the PostgreSQL database:
   
     * Host: db
-    * Port: 5432
+    * Port: 5433
     * Username: postgres
     * Password: your_postgres_password
     * Database: askdb
@@ -160,27 +162,26 @@ HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
 * docker-compose.yml:
 
 ~~~~
-version: '3.9'
-
 services:
   db:
     build: ./postgres
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: askdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  website:
+  web:
     build: .
-    command: flask run --host=0.0.0.0
+    command: flask run --host=0.0.0.0 --port=5000
     environment:
       FLASK_ENV: development
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/askdb
@@ -191,6 +192,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4
@@ -202,11 +208,34 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   postgres_data:
 
 ~~~~
+
+# Continuous Integration and Deployment
+### CI/CD Pipeline
+This project uses GitHub Actions to automate the CI/CD pipeline. The pipeline performs the following steps:
+
+1. Set Up Job: Initializes the CI environment on an Ubuntu runner.
+2. Checkout Code: Clones the repository code into the runner.
+3. Set Up Python: Installs Python 3.11.
+4. Install Dependencies: Installs Python packages listed in requirements.txt.
+5. Set Environment Variables: Loads secrets from GitHub into environment variables.
+6. Install Docker Compose: Installs Docker Compose on the runner.
+7. Run Tests: Executes unit tests using Pytest.
+8. Build Docker Image: Builds Docker images for the application.
+9. Docker Compose Up: Starts the application services using Docker Compose.
+10. Run Alembic Migrations: Applies database migrations using Alembic.
+11. Deploy to Production: Placeholder for deployment commands (to be implemented). 
+
+To trigger the CI/CD pipeline, push changes to the master branch or create a pull request targeting master. Check the Actions tab in your GitHub repository to view the status and logs of pipeline runs.
 
 # API Endpoints #
 ### /ask ###
