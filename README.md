@@ -9,7 +9,7 @@ AskMeAPP is a Flask-based web application that allows users to ask questions and
 - [Running the Application](#running-the-application)
 - [Testing](#testing)
 - [Configuration](#configuration)
-- [Continuous Integration and Deployment](#Continuous-Integration-and Deployment)
+- [Continuous Integration and Deployment](#continuous-integration-and-deployment)
 - [API Endpoints](#api-endpoints)
 - [License](#License)
 
@@ -219,7 +219,7 @@ volumes:
 
 ~~~~
 
-# Continuous Integration and Deployment
+## Continuous Integration and Deployment
 ### CI/CD Pipeline
 This project uses GitHub Actions to automate the CI/CD pipeline. The pipeline performs the following steps:
 
