@@ -68,7 +68,7 @@ jobs:
         run: docker-compose up -d
 
       - name: Run migrations
-        run: docker-compose exec -T web flask db upgrade
+        run: docker-compose exec -T web alembic upgrade head
 
       - name: Deploy to production (dummy step)
         if: github.ref == 'refs/heads/master'
