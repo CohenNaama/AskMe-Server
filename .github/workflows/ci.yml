@@ -67,8 +67,10 @@ jobs:
       - name: Docker Compose up
         run: docker-compose up -d
 
-      - name: Run migrations
-        run: docker-compose exec -T web alembic upgrade head
+      - name: Run Alembic Migrations
+        run: |
+            echo "Running Alembic migrations"
+            alembic upgrade head
 
       - name: Deploy to production (dummy step)
         if: github.ref == 'refs/heads/master'
