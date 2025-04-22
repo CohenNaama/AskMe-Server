@@ -1,5 +1,11 @@
 # AskMe-Server
 
+
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
+![Flask](https://img.shields.io/badge/Flask-2.3-lightgrey?logo=flask)
+![Docker](https://img.shields.io/badge/Docker-%231572B6.svg?logo=docker&logoColor=white)
+![CI/CD Pipeline](https://github.com/CohenNaama/AskMe-Server/actions/workflows/ci.yml/badge.svg)
+
 **AskMeAPP is a Flask-based web application that allows users to ask natural language questions and get AI-generated answers using the OpenAI API.** 
 
 The app features a clean and responsive web interface built with standard HTML, JavaScript, and Materialize CSS for modern styling.
