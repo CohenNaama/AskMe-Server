@@ -161,3 +161,25 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 .env
+
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.env/
+
+# IDE configs
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Flask instance folder
+instance/
+
